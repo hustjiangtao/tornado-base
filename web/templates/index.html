@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Index Page</title>
+{% end %}
+
+{% block content %}
+{% for x in range(100) %}
+<p style="text-align: center">{{ data }}</p>
+{% end %}
+{% end %}
