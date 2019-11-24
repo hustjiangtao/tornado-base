@@ -37,3 +37,21 @@ So, a base structure definded including:
 ## TODO
 
 - Admin
+
+## 使用
+
+```bash
+# 生产环境启动
+make run
+# 开发环境启动
+make dev port=8081
+# 测试
+make test
+# 脚本
+make fetch_loop
+# 数据库结构迁移
+make migrations msg="init db"
+make migrate
+# 生成新app模块
+make startapp name=demo
+```
