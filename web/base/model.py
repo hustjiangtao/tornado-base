@@ -8,7 +8,7 @@ from contextlib import contextmanager
 
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, TIMESTAMP
-from sqlalchemy import func
+from sqlalchemy import func, inspect
 
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -98,6 +98,19 @@ class MetaModel(DBMixin):
     def columnitems(self):
         return dict([(c, getattr(self, c)) for c in self.columns])
 
+    @classmethod
+    def all_fields(cls, include: list = None, exclude: list = None):
+        """get all model attrs
+        usage: query(*DemoModel.all_fields()).all()
+        """
+        if exclude is None:
+            exclude = []
+        if include and isinstance(include, (list, tuple)):
+            r = [getattr(cls, x) for x in (c.name for c in cls.__table__.columns) if x in include and x not in exclude]
+        else:
+            r = [getattr(cls, x) for x in (c.name for c in cls.__table__.columns) if x not in exclude]
+        return r
+
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__, self.columnitems)
 
@@ -110,6 +123,12 @@ class MetaModel(DBMixin):
         else:
             result = self.columnitems
         return result
+
+    def _asdict(self):
+        """keep same with sqlalchemy.util._collections.KeyedTuple._asdict
+        query(model.id, model.name).all() -> KeyedTuple
+        """
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
     def to_json(self):
         """transform sql obj to json"""
